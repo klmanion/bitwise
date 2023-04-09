@@ -20,7 +20,7 @@ LDFLAGS =
 
 LIBS =
 
-SRCS_C = main.c
+SRCS_C = main.c bitwise.c
 
 SRCS = $(addprefix $(srcdir)/, $(SRCS_C))
 OBJS = $(addprefix $(objdir)/, $(SRCS_C:.c=.o))
@@ -79,6 +79,5 @@ $(objdir)/%.o: $(srcdir)/%.c
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
 
-## FIXME DEBUG
-main.o: foo.o
+main.o: bitwise.o
 
