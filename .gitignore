@@ -1,0 +1,10 @@
+
+## source
+*.o
+
+## vim
+*.swp
+
+## binary
+bitwise
+a.out
