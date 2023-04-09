@@ -59,12 +59,13 @@ cleantags:
 	rm -f tags
 	
 realclean: clean distclean cleantags
-	rm -f $(TARGET)
+	rm -f $(builddir)/$(TARGET)
 	rm -f *.swp
 
 .c.o:
 	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $@
+	mkdir -p $(builddir)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
 

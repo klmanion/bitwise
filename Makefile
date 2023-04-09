@@ -4,8 +4,9 @@ SHELL=/bin/sh
 
 TARGET = bitwise
 
-topdir = .
+topdir = $(PWD)
 srcdir = $(topdir)/src
+builddir = $(topdir)/build
 
 prefix = /usr/local
 
