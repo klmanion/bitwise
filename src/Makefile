@@ -1,71 +1,70 @@
 #!/usr/bin/make -f
 
-SHELL = /bin/sh
-
-topdir = ..
-srcdir = $(topdir)/src
-
 CC = clang
+LEX = /usr/bin/flex
+YACC = /usr/bin/bison
+
 INSTALL = /usr/local/bin/install -c
 INSTALLDATA = /usr/local/bin/install -c -m 644
 
 LANG = c
-STD = c11
+STD = c17
+
 CDEBUG = -g
-CFLAGS = $(CDEBUG) -Wall -pedantic -O2
-DEFS = -DDEBUG
-CPPFLAGS = -I. -I$(srcdir) -I$(topdir)/include $(DEFS)
-LDFLAGS = 
+WARN = -Wall -pedantic
+OPTIM = -O2
+CFLAGS = $(CDEBUG) $(WARN) $(OPTIM)
+DEFS =
+CPPFLAGS = -I$(srcdir) -I$(topdir)/include $(DEFS)
+LDFLAGS =
 
 LIBS =
-
-prefix = /usr/local
-binprefix = 
-
-bindir = $(prefix)/bin
 
 SRCS_C = main.c
 SRCS = $(SRCS_C)
 OBJS = $(SRCS_C:.c=.o)
 
-## add README and LICENSE to this
+## TODO add README
 AUX = LICENSE
 
 .ONESHELL:
 
-.EXPORT_ALL_VARIABLES:
-
-.SUFFIXES:
 .SUFFIXES: .c .h .o
 
-.cpp.o:
-	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
-
 .PHONY: all
-all: bitwise
+all: $(TARGET)
 
 .PHONY: install
 install: all
-	$(INSTALL) bitwise $(bindir)/$(binprefix)bitwise
+	$(INSTALL) $(TARGET) $(bindir)/$(TARGET)
 
-.PHONY: TAGS tags
-TAGS: $(SRCS)
-	ctags $^
+## TODO support tags other than ctags
+.PHONY: TAGS tags ctags
+TAGS: ctags
 
 tags: TAGS
 
-.PHONY: clean realclean distclean
+ctags: $(SRCS)
+	ctags $^
+
+.PHONY: clean distclean cleantags realclean
 clean:
 	rm -f *.o
 
-realclean: clean
-	rm -f bitwise TAGS tags
+## TODO add dist rule, and clean its products here
+distclean: clean
 
-distclean: realclean
+## TODO include tags other than ctags
+cleantags:
+	rm -f tags
+	
+realclean: clean distclean cleantags
+	rm -f $(TARGET)
 	rm -f *.swp
 
-bitwise: $(OBJS)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $@
+.c.o:
+	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-main.o:
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $@
 
