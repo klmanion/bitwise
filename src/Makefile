@@ -21,8 +21,9 @@ LDFLAGS =
 LIBS =
 
 SRCS_C = main.c
-SRCS = $(SRCS_C)
-OBJS = $(SRCS_C:.c=.o)
+
+SRCS = $(addprefix $(srcdir)/, $(SRCS_C))
+OBJS = $(addprefix $(objdir)/, $(SRCS_C:.c=.o))
 
 ## TODO add README
 AUX = LICENSE
@@ -32,11 +33,16 @@ AUX = LICENSE
 .SUFFIXES: .c .h .o
 
 .PHONY: all
-all: $(TARGET)
+all: DIRS $(TARGET)
 
 .PHONY: install
 install: all
-	$(INSTALL) $(TARGET) $(bindir)/$(TARGET)
+	$(INSTALL) $(builddir)/$(TARGET) $(bindir)/$(TARGET)
+
+.PHONY: DIRS
+DIRS:
+	mkdir -p $(objdir)
+	mkdir -p $(builddir)
 
 ## TODO support tags other than ctags
 .PHONY: TAGS tags ctags
@@ -49,7 +55,7 @@ ctags: $(SRCS)
 
 .PHONY: clean distclean cleantags realclean
 clean:
-	rm -f *.o
+	rm -f $(OBJS)
 
 ## TODO add dist rule, and clean its products here
 distclean: clean
@@ -57,15 +63,22 @@ distclean: clean
 ## TODO include tags other than ctags
 cleantags:
 	rm -f tags
+
+cleandirs:
+	rm -rf $(objdir)
+	rm -rf $(builddir)
 	
-realclean: clean distclean cleantags
-	rm -f $(builddir)/$(TARGET)
+realclean: clean distclean cleantags cleandirs
+	rm -rf $(builddir)
+	rm -rf $(objdir)
 	rm -f *.swp
 
-.c.o:
+$(objdir)/%.o: $(srcdir)/%.c
 	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
 $(TARGET): $(OBJS)
-	mkdir -p $(builddir)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
+
+## FIXME DEBUG
+main.o: foo.o
 

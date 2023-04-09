@@ -7,6 +7,7 @@ TARGET = bitwise
 topdir = $(PWD)
 srcdir = $(topdir)/src
 builddir = $(topdir)/build
+objdir = $(topdir)/obj
 
 prefix = /usr/local
 
@@ -37,6 +38,10 @@ $(TARGET):
 .PHONY: install
 install:
 	$(MAKE) -C $(srcdir) install
+
+.PHONY: DIRS
+DIRS:
+	$(MAKE) -C $(srcdir) DIRS
 
 .PHONY: TAGS tags ctags
 TAGS:
