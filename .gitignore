@@ -2,6 +2,9 @@
 ## source
 *.o
 
+## lex
+lex.yy.c
+
 ## vim
 *.swp
 

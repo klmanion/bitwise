@@ -20,7 +20,10 @@ LDFLAGS =
 
 LIBS =
 
-SRCS_C = main.c bitwise.c
+LFLAGS =
+
+SRCS_L = lex.l
+SRCS_C = main.c bitwise.c $(SRCS_L:.l=.yy.c)
 
 SRCS = $(addprefix $(srcdir)/, $(SRCS_C))
 OBJS = $(addprefix $(objdir)/, $(SRCS_C:.c=.o))
@@ -54,8 +57,10 @@ ctags: $(SRCS)
 	ctags $^
 
 .PHONY: clean distclean cleantags realclean
+## TODO remove lex.yy.c properly
 clean:
 	rm -f $(OBJS)
+	rm -f $(srcdir)/lex.yy.c
 
 ## TODO add dist rule, and clean its products here
 distclean: clean
@@ -79,5 +84,10 @@ $(objdir)/%.o: $(srcdir)/%.c
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
 
-main.o: bitwise.o
+$(srcdir)/lex.yy.c: lex.l
+	$(LEX) $(LFLAGS) $<
+
+main.o: bitwise.o lex.yy.o
+
+lex.yy.o: bitwise.o
 

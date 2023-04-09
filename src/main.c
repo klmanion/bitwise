@@ -10,26 +10,12 @@
 #include <err.h>
 #include "bitwise.h"
 
+int	yylex (void);
+
 int
-main(
-    int		argc,
-    char *const argv[])
+main()
 {
-	int n;
-	char *bstr;
-
-	--argc;	++argv;
-
-	if (argc != 1)
-	    errx(1,"pass a number on the command line");
-
-	n = atoi(argv[0]);
-
-	printf("0x%0x: %s\n", n, (bstr=binary_str(n)));
-
-	free(bstr);
-
-	return EXIT_SUCCESS;
+	return yylex();
 }
 
 /* vi: set ts=8 sw=8 noexpandtab tw=79: */
