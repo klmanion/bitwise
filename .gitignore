@@ -3,11 +3,10 @@
 *.o
 
 ## lex
-lex.yy.c
+*.yy.*
 
 ## yacc
-*.tab.c
-*.tab.h
+*.tab.*
 
 ## vim
 *.swp

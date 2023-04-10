@@ -2,7 +2,7 @@
 
 CC = clang
 LEX = /usr/bin/flex
-YACC = /usr/bin/bison
+YACC = /usr/bin/bison -d
 
 INSTALL = /usr/local/bin/install -c
 INSTALLDATA = /usr/local/bin/install -c -m 644
@@ -26,9 +26,7 @@ LFLAGS =
 
 SRCS_L = lex.l
 SRCS_Y = parse.y
-SRCS_L_C = $(SRCS_L:.l=.yy.c)
-SRCS_Y_C = $(SRCS_Y:.y=.tab.c)
-SRCS_C = main.c bitwise.c $(SRCS_L_C) $(SRCS_Y_C)
+SRCS_C = main.c bitwise.c $(SRCS_L:.l=.yy.c) $(SRCS_Y:.y=.tab.c)
 
 SRCS = $(addprefix $(srcdir)/, $(SRCS_C))
 OBJS = $(addprefix $(objdir)/, $(SRCS_C:.c=.o))
@@ -65,8 +63,8 @@ ctags: $(SRCS)
 ## TODO remove lex.yy.c properly
 clean:
 	rm -f $(OBJS)
-	rm -f $(SRCS_L_C)
-	rm -f $(SRCS_Y_C)
+	rm -f *.yy.c *.yy.h
+	rm -f *.tab.c *.tab.h
 
 ## TODO add dist rule, and clean its products here
 distclean: clean
@@ -88,15 +86,17 @@ $(objdir)/%.o: $(srcdir)/%.c
 	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
 $(srcdir)/%.yy.c: $(srcdir)/%.l
-	$(LEX) $(LFLAGS) $<
+	$(LEX) $(LFLAGS) --header-file=$(<:.l=.yy.h) $<
 
 $(srcdir)/%.tab.c: $(srcdir)/%.y
-	$(YACC) $(YFLAGS) -d $<
+	$(YACC) $(YFLAGS) $<
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
 
-main.o: bitwise.o lex.yy.o parse.tab.o
+$(objdir)/main.o: $(addprefix $(objdir)/, bitwise.o lex.yy.o parse.tab.o)
 
-lex.yy.o: bitwise.o parse.tab.o
+$(srcdir)/lex.yy.c: $(srcdir)/parse.tab.c
+
+$(objdir)/lex.yy.o: $(addprefix $(objdir)/, bitwise.o parse.tab.o)
 
