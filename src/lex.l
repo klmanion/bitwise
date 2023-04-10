@@ -17,7 +17,7 @@
 
 %%
 
-[0-9]+	{ yylval = atoi(yytext); return NUM; }
+[0-9]+	{ yylval = (YYSTYPE)atoi(yytext); return NUM; }
 
 .*	{ warnx("invalid input"); }
 
