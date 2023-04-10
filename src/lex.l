@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <err.h>
 #include "parse.tab.h"
+
+#define YY_NO_UNPUT
+#define YY_NO_INPUT
 %}
 
 %%

@@ -14,7 +14,9 @@ CDEBUG = -g
 WARN = -Wall -pedantic
 OPTIM = -O2
 CFLAGS = $(CDEBUG) $(WARN) $(OPTIM)
-DEFS =
+DEFS = -D_POSIX_C_SOURCE
+## _POSIX_C_SOURCE needed to get fileno() from stdio
+##	eliminates warning from produced lex.yy.c
 CPPFLAGS = -I$(srcdir) -I$(topdir)/include $(DEFS)
 LDFLAGS =
 
