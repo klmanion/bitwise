@@ -23,7 +23,10 @@ LIBS =
 LFLAGS =
 
 SRCS_L = lex.l
-SRCS_C = main.c bitwise.c $(SRCS_L:.l=.yy.c)
+SRCS_Y = parse.y
+SRCS_L_C = $(SRCS_L:.l=.yy.c)
+SRCS_Y_C = $(SRCS_Y:.y=.tab.c)
+SRCS_C = main.c bitwise.c $(SRCS_L_C) $(SRCS_Y_C)
 
 SRCS = $(addprefix $(srcdir)/, $(SRCS_C))
 OBJS = $(addprefix $(objdir)/, $(SRCS_C:.c=.o))
@@ -33,7 +36,7 @@ AUX = LICENSE
 
 .ONESHELL:
 
-.SUFFIXES: .c .h .o
+.SUFFIXES: .c .h .o .l .y
 
 .PHONY: all
 all: DIRS $(TARGET)
@@ -60,7 +63,8 @@ ctags: $(SRCS)
 ## TODO remove lex.yy.c properly
 clean:
 	rm -f $(OBJS)
-	rm -f $(srcdir)/lex.yy.c
+	rm -f $(SRCS_L_C)
+	rm -f $(SRCS_Y_C)
 
 ## TODO add dist rule, and clean its products here
 distclean: clean
@@ -81,13 +85,16 @@ realclean: clean distclean cleantags cleandirs
 $(objdir)/%.o: $(srcdir)/%.c
 	$(CC) -c -x$(LANG) -std=$(STD) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
+$(srcdir)/%.yy.c: $(srcdir)/%.l
+	$(LEX) $(LFLAGS) $<
+
+$(srcdir)/%.tab.c: $(srcdir)/%.y
+	$(YACC) $(YFLAGS) -d $<
+
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LIBS) -o $(builddir)/$@
 
-$(srcdir)/lex.yy.c: lex.l
-	$(LEX) $(LFLAGS) $<
+main.o: bitwise.o lex.yy.o parse.tab.o
 
-main.o: bitwise.o lex.yy.o
-
-lex.yy.o: bitwise.o
+lex.yy.o: bitwise.o parse.tab.o
 

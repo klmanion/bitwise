@@ -5,6 +5,10 @@
 ## lex
 lex.yy.c
 
+## yacc
+*.tab.c
+*.tab.h
+
 ## vim
 *.swp
 

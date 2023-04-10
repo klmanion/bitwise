@@ -9,23 +9,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <err.h>
-#include "bitwise.h"
+#include "parse.tab.h"
 %}
 
 %%
 
-[0-9]+	{
-		int n;
-		char *bstr;
+[0-9]+	{ yylval = atoi(yytext); return NUM; }
 
-		n = atoi(yytext);
-	
-		printf("0x%0x: %s\n", n, (bstr=binary_str(n)));
-	
-		free(bstr);
-	}
-
-.*	{ errx(1,"invalid input"); }
+.*	{ warnx("invalid input"); }
 
 %%
 

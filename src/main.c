@@ -10,12 +10,12 @@
 #include <err.h>
 #include "bitwise.h"
 
-int	yylex (void);
+int	yyparse (void);
 
 int
 main()
 {
-	return yylex();
+	return yyparse();
 }
 
 /* vi: set ts=8 sw=8 noexpandtab tw=79: */
